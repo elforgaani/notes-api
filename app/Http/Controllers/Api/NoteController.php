@@ -4,6 +4,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\NoteCollection;
+use App\Http\Resources\NoteResource;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -18,12 +20,16 @@ class NoteController extends Controller
     {
         $id = Auth::id();
         try {
-            $notes = Note::where('user_id', $id)->get();
-            return response()->json([
-                'status' => true,
-                'message' => 'Notes fetched successfully',
-                'notes' => $notes
-            ]);
+            $notes = Note::where('user_id', $id)->paginate(6);
+            // ->get();
+            return new NoteCollection($notes);
+
+            
+            // response()->json([
+            //     'status' => true,
+            //     'message' => 'Notes fetched successfully',
+            //     'notes' => $notes
+            // ]);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
